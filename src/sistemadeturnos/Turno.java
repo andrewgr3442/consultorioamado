@@ -11,14 +11,25 @@ public class Turno {
     private Paciente paciente;
     private LocalDate fecha;
     private LocalTime hora;
-    private String motivoConsulta; 
+    private String motivoConsulta;
 
+    // Turno nuevo: toma el próximo ID disponible
     public Turno(Paciente paciente, LocalDate fecha, LocalTime hora, String motivoConsulta) {
         this.id = contadorId++;
         this.paciente = paciente;
         this.fecha = fecha;
         this.hora = hora;
         this.motivoConsulta = motivoConsulta;
+    }
+
+    // Turno cargado desde archivo: conserva su ID y ajusta el contador para no repetir IDs
+    public Turno(int id, Paciente paciente, LocalDate fecha, LocalTime hora, String motivoConsulta) {
+        this.id = id;
+        this.paciente = paciente;
+        this.fecha = fecha;
+        this.hora = hora;
+        this.motivoConsulta = motivoConsulta;
+        if (id >= contadorId) contadorId = id + 1;
     }
 
     public int getId() { return id; }
@@ -30,5 +41,3 @@ public class Turno {
     public void setFecha(LocalDate fecha) { this.fecha = fecha; }
     public void setHora(LocalTime hora) { this.hora = hora; }
 }
-    
-
