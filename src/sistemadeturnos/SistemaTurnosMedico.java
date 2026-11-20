@@ -101,18 +101,20 @@ public class SistemaTurnosMedico {
         }
 
         System.out.println("\n[PASO 2] Verificación de Agenda y Horario");
-        LocalDate fecha = solicitarFecha();
-        List<LocalTime> libres = horariosDisponibles(fecha, -1);
-        if (libres.isEmpty()) {
-            mostrarAdvertencia("No hay horarios disponibles el " + fecha + " (día no hábil, pasado o agenda completa).");
-            return;
+        LocalDate fecha;
+        List<LocalTime> libres;
+        while (true) {
+            fecha = solicitarFecha();
+            libres = horariosDisponibles(fecha, -1);
+            if (!libres.isEmpty()) break;
+            mostrarAdvertencia("No hay horarios disponibles el " + fecha + " (día no hábil, pasado o agenda completa). Ingrese otra fecha.");
         }
         System.out.println("Horarios disponibles: " + libres);
-        LocalTime hora = solicitarHora();
-
-        if (!libres.contains(hora)) {
+        LocalTime hora;
+        while (true) {
+            hora = solicitarHora();
+            if (libres.contains(hora)) break;
             mostrarAdvertencia("Horario no disponible. Elija uno de la lista de horarios disponibles.");
-            return;
         }
 
         System.out.println("\n[PASO 3] Carga de Motivo (CONFIDENCIAL)");
@@ -142,18 +144,21 @@ public class SistemaTurnosMedico {
         if (turno == null) return;
 
         System.out.println("Ingrese la nueva fecha y hora para la reprogramación:");
-        LocalDate nuevaFecha = solicitarFecha();
-        List<LocalTime> libres = horariosDisponibles(nuevaFecha, turno.getId());
-        if (libres.isEmpty()) {
-            mostrarAdvertencia("No hay horarios disponibles el " + nuevaFecha + " (día no hábil, pasado o agenda completa).");
-            return;
+        LocalDate nuevaFecha;
+        List<LocalTime> libres;
+        while (true) {
+            nuevaFecha = solicitarFecha();
+            // -1: el horario actual del turno cuenta como ocupado, no se puede reprogramar al mismo día y hora
+            libres = horariosDisponibles(nuevaFecha, -1);
+            if (!libres.isEmpty()) break;
+            mostrarAdvertencia("No hay horarios disponibles el " + nuevaFecha + " (día no hábil, pasado o agenda completa). Ingrese otra fecha.");
         }
         System.out.println("Horarios disponibles: " + libres);
-        LocalTime nuevaHora = solicitarHora();
-
-        if (!libres.contains(nuevaHora)) {
-            mostrarAdvertencia("Conflicto de agenda: horario no disponible. Elija uno de la lista.");
-            return;
+        LocalTime nuevaHora;
+        while (true) {
+            nuevaHora = solicitarHora();
+            if (libres.contains(nuevaHora)) break;
+            mostrarAdvertencia("Horario no disponible (puede ser el mismo horario actual del turno). Elija uno de la lista.");
         }
 
         turno.setFecha(nuevaFecha);
